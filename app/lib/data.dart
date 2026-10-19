@@ -11,8 +11,9 @@ class Station {
   final double lat;
   final double lon;
   final int racks;
+  final Map<String, int> days; // 요일 구분 → 공백률 계산에 쓴 기록 일수
 
-  const Station(this.id, this.name, this.gu, this.lat, this.lon, this.racks);
+  const Station(this.id, this.name, this.gu, this.lat, this.lon, this.racks, this.days);
 
   factory Station.fromJson(Map<String, dynamic> j) => Station(
         j['id'] as int,
@@ -21,7 +22,10 @@ class Station {
         (j['lat'] as num).toDouble(),
         (j['lon'] as num).toDouble(),
         j['racks'] as int,
+        (j['days'] as Map<String, dynamic>).map((k, v) => MapEntry(k, v as int)),
       );
+
+  int daysOf(DayType day) => days[day.key] ?? 0;
 }
 
 /// 평일 / 휴일(주말·공휴일)
@@ -45,10 +49,13 @@ class Nearby {
 }
 
 class AppData {
+  /// 기록 30일 미만: 공백률 변동 폭이 커서 상위 목록 제외, 상세 화면 참고용 표기
+  static const minDays = 30;
+
   final List<Station> stations;
   final Map<int, Map<String, List<int>>> _rates; // 대여소 번호 → 요일 구분 → 24시간 공백률(%)
 
-  AppData._(this.stations, this._rates);
+  AppData(this.stations, this._rates);
 
   static Future<AppData> load() async {
     final stationJson = jsonDecode(await rootBundle.loadString('assets/stations.json')) as List;
@@ -61,22 +68,32 @@ class AppData {
             d.key: (d.value as List).map((v) => v as int).toList(),
         },
     };
-    return AppData._(stations, rates);
+    return AppData(stations, rates);
   }
 
   List<int> rates(int stationId, DayType day) => _rates[stationId]![day.key]!;
 
   int rateAt(int stationId, DayType day, int hour) => rates(stationId, day)[hour];
 
-  /// 이름·자치구 검색
+  /// 이름·자치구·대여소 번호 검색
+  /// 대여소명 표기 혼재(번출구 385곳, 번 출구 120곳) → 띄어쓰기 무시
   List<Station> search(String query) {
-    final q = query.trim();
-    return stations.where((s) => s.name.contains(q) || s.gu.contains(q)).toList();
+    // 공백 무시 비교, 대여소 번호 일치 검색
+    final q = _compact(query);  // 공백 제거
+    final id = int.tryParse(q);
+    final hits = stations.where((s) => s.id == id ||
+        _compact(s.name).contains(q) ||
+        _compact(s.gu).contains(q));
+    return hits.toList();
   }
 
-  /// 지금 시간 공백률 높은 대여소
+  /// 지금 시간 공백률 높은 대여소 (기록 30일 미만 제외, 동률 시 대여소 번호 순)
   List<Station> emptiest(DayType day, int hour, {int limit = 20}) {
-    final list = [...stations]..sort((a, b) => rateAt(b.id, day, hour).compareTo(rateAt(a.id, day, hour)));
+    final list = stations.where((s) => s.daysOf(day) >= minDays).toList()
+      ..sort((a, b) {
+        final r = rateAt(b.id, day, hour).compareTo(rateAt(a.id, day, hour));
+        return r != 0 ? r : a.id.compareTo(b.id);
+      });
     return list.take(limit).toList();
   }
 
@@ -93,6 +110,8 @@ class AppData {
     return list;
   }
 }
+
+String _compact(String s) => s.replaceAll(RegExp(r'\s+'), '');
 
 /// 서울 위도(약 37.5도) 기준 근사 거리(m): 경도 1도 약 88.2km, 위도 1도 약 111km
 double distance(Station a, Station b) {

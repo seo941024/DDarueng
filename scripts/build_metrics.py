@@ -102,8 +102,19 @@ def write_report(con):
 
 
 def export_assets(con):
+    # days: 요일 구분별 공백률 계산에 쓴 기록 일수 (앱: 30일 미만 상위 목록 제외·참고용 표기)
+    days = {}
+    for sid, day_type, n in con.execute(
+            "SELECT a.station_id, c.day_type, COUNT(DISTINCT a.date) FROM availability a "
+            "JOIN calendar c ON c.date = a.date "
+            "JOIN station_span sp ON sp.station_id = a.station_id AND a.date BETWEEN sp.first_day AND sp.last_day "
+            "JOIN station_month m ON m.station_id = a.station_id "
+            "    AND m.month = strftime(a.date, '%Y-%m') AND m.active "
+            "GROUP BY ALL ORDER BY ALL").fetchall():
+        days.setdefault(sid, {})[day_type] = n
     # 위치가 있는 대여소만 (대여소 정보와 연결되는 번호)
-    stations = [dict(zip(("id", "name", "gu", "lat", "lon", "racks"), r)) for r in con.execute(
+    stations = [{**dict(zip(("id", "name", "gu", "lat", "lon", "racks"), r)), "days": days[r[0]]}
+                for r in con.execute(
         "SELECT station_id, name, gu, lat, lon, racks FROM stations "
         "WHERE station_id IN (SELECT station_id FROM empty_rate) ORDER BY station_id").fetchall()]
     ids = {s["id"] for s in stations}

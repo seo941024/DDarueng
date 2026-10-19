@@ -1,4 +1,5 @@
 // 대여소 검색: 검색어 없으면 지금 시간 공백률 높은 대여소
+import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -17,6 +18,20 @@ class SearchPage extends StatefulWidget {
 
 class _SearchPageState extends State<SearchPage> {
   String _query = '';
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    // 화면을 켜 둔 동안 시간대가 바뀌면 현재 시각 기준으로 다시 계산
+    _timer = Timer.periodic(const Duration(minutes: 1), (_) => setState(() {}));
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +50,7 @@ class _SearchPageState extends State<SearchPage> {
             child: TextField(
               decoration: const InputDecoration(
                 prefixIcon: Icon(Icons.search),
-                hintText: '대여소 이름 또는 자치구',
+                hintText: '대여소 이름·번호 또는 자치구',
                 border: OutlineInputBorder(),
               ),
               onChanged: (v) => setState(() => _query = v),

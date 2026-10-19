@@ -1,4 +1,6 @@
 // 대여소 상세: 24시간 공백률 그래프 + 500m 안 대체 대여소
+import 'dart:async';
+
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
@@ -16,6 +18,20 @@ class DetailPage extends StatefulWidget {
 
 class _DetailPageState extends State<DetailPage> {
   DayType _day = DayType.of(DateTime.now());
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    // 화면을 켜 둔 동안 시간대가 바뀌면 현재 시각 막대·대체 대여소 다시 계산
+    _timer = Timer.periodic(const Duration(minutes: 1), (_) => setState(() {}));
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,6 +59,9 @@ class _DetailPageState extends State<DetailPage> {
           ),
           const Text('2025년 같은 요일 구분·시간대 기록 중 자전거 0대 비율',
               style: TextStyle(fontSize: 12, color: gray)),
+          if (s.daysOf(_day) < AppData.minDays)
+            Text('${_day.label} 기록 ${s.daysOf(_day)}일: ${AppData.minDays}일 미만, 참고용 수치',
+                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: navy)),
           const SizedBox(height: 16),
           SizedBox(height: 200, child: HourChart(rates: rates, highlight: hour)),
           const SizedBox(height: 24),

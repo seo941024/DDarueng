@@ -17,7 +17,9 @@ JOIN stations s USING (station_id)
 WHERE e.day_type = 'weekday' AND e.hour BETWEEN 7 AND 9
 GROUP BY e.station_id, s.name, s.gu
 HAVING SUM(e.records) >= 300          -- 기록이 적은 대여소 제외
-ORDER BY empty_pct DESC
+-- 수정 전: ORDER BY empty_pct DESC  (반올림 값, 동률 순서 임의)
+ORDER BY SUM(e.empty_rate * e.records) / SUM(e.records) DESC,
+         e.station_id        -- 동률 시 대여소 번호 순
 LIMIT 20;
 
 -- 3. 자치구별 평일 출근 시간 공백률
@@ -28,7 +30,8 @@ FROM empty_rate e
 JOIN stations s USING (station_id)
 WHERE e.day_type = 'weekday' AND e.hour BETWEEN 7 AND 9
 GROUP BY s.gu
-ORDER BY empty_pct DESC;
+ORDER BY SUM(e.empty_rate * e.records) / SUM(e.records) DESC,
+         s.gu;               -- 동률 시 자치구명 순
 
 -- 4. 월별 공백률 (계절 차이)
 SELECT strftime(a.date, '%Y-%m') AS year_month,

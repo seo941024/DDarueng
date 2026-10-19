@@ -26,6 +26,7 @@ flutter:
   assets:
     - assets/stations.json
     - assets/empty_rate.json
+    - assets/diagnosis.json
   # 한글 글꼴 앱 포함: 인터넷 없이도 한글 표시 (Pretendard 1.3.9, SIL OFL, fonts/LICENSE.txt)
   fonts:
     - family: Pretendard

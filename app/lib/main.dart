@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 import 'data.dart';
-import 'search_page.dart';
+import 'diagnosis.dart';
+import 'desktop_shell.dart';
 import 'style.dart';
 
 void main() => runApp(const App());
@@ -14,15 +15,15 @@ class App extends StatefulWidget {
 }
 
 class _AppState extends State<App> {
-  final Future<AppData> _data = AppData.load();
+  final Future<(AppData, DiagnosisData)> _data = (AppData.load(), DiagnosisData.load()).wait;
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: '따릉이 공백률',
+      title: '따릉이 대여소 진단',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(colorSchemeSeed: navy, fontFamily: 'Pretendard'),
-      home: FutureBuilder<AppData>(
+      home: FutureBuilder<(AppData, DiagnosisData)>(
         future: _data,
         builder: (context, snap) {
           if (snap.hasError) {
@@ -31,7 +32,8 @@ class _AppState extends State<App> {
           if (!snap.hasData) {
             return const Scaffold(body: Center(child: CircularProgressIndicator()));
           }
-          return SearchPage(data: snap.data!);
+          final (data, diag) = snap.data!;
+          return DesktopShell(data: data, diag: diag);
         },
       ),
     );

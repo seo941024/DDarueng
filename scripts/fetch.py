@@ -35,7 +35,16 @@ def stations_target(title, since):
     return RAW / "stations" / f"stations_{m[1]}{int(m[2]):02d}.xlsx"
 
 
-DATASETS = [("OA-22382", availability_target), ("OA-13252", stations_target)]
+def rentals_target(title, since):
+    # "서울특별시 공공자전거 대여이력 정보_2025.zip" → data/raw/rentals_2025/rentals_2025.zip (연 단위 파일만)
+    m = re.search(r"대여이력 정보_(\d{4})\.zip$", title)
+    if not m or int(m[1]) < since:
+        return None
+    name = f"rentals_{m[1]}"
+    return RAW / name / f"{name}.zip"
+
+
+DATASETS = [("OA-22382", availability_target), ("OA-13252", stations_target), ("OA-15182", rentals_target)]
 
 
 def get(url, data=None):

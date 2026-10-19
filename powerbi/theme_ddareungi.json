@@ -1,0 +1,25 @@
+{
+  "name": "따릉이 대여소 진단",
+  "dataColors": ["#118DFF", "#12239E", "#D62728", "#2E9E44", "#111111", "#744EC2", "#D9B300", "#E66C37"],
+  "foreground": "#212529",
+  "foregroundNeutralSecondary": "#6C757D",
+  "background": "#FFFFFF",
+  "tableAccent": "#1E3A5F",
+  "textClasses": {
+    "callout": { "fontFace": "Pretendard", "fontSize": 28, "color": "#1E3A5F" },
+    "title": { "fontFace": "Pretendard", "fontSize": 14, "color": "#1E3A5F" },
+    "header": { "fontFace": "Pretendard", "fontSize": 12, "color": "#212529" },
+    "label": { "fontFace": "Pretendard", "fontSize": 11, "color": "#212529" }
+  },
+  "visualStyles": {
+    "*": {
+      "*": {
+        "title": [{ "fontFamily": "Pretendard", "bold": true }],
+        "categoryAxis": [{ "fontFamily": "Pretendard" }],
+        "valueAxis": [{ "fontFamily": "Pretendard" }],
+        "legend": [{ "fontFamily": "Pretendard" }],
+        "labels": [{ "fontFamily": "Pretendard" }]
+      }
+    }
+  }
+}

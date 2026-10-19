@@ -22,7 +22,8 @@ HOLIDAYS_2025 = {
     "2025-10-08", "2025-10-09", "2025-12-25",                              # 추석 대체, 한글날, 성탄절
 }
 
-MIN_BIKE_DAYS = 10  # 자전거가 있던 날이 한 달의 약 1/3 미만인 달은 운영 중단으로 제외 (자주 비는 대여소도 최소 13일)
+# 자전거가 있던 날이 한 달의 약 1/3 미만인 달은 운영 중단으로 제외 (자주 비는 대여소도 최소 13일)
+MIN_BIKE_DAYS = 10  # 기준값 1곳 관리, 변경 시 재집계
 
 STEPS = f"""
 -- 운영 기간: 처음 ~ 마지막으로 자전거가 기록된 날 (개설 전·폐쇄 후 제외)
@@ -37,7 +38,8 @@ GROUP BY station_id;
 CREATE OR REPLACE TABLE station_month AS
 SELECT station_id, strftime(date, '%Y-%m') AS month, COUNT(*) AS records,
        COUNT(DISTINCT date) FILTER (WHERE bikes > 0) AS bike_days,
-       COUNT(DISTINCT date) FILTER (WHERE bikes > 0) >= {MIN_BIKE_DAYS} AS active
+       COUNT(DISTINCT date) FILTER (WHERE bikes > 0)
+           >= {MIN_BIKE_DAYS} AS active  -- 월별 운영 여부
 FROM availability
 GROUP BY station_id, month;
 

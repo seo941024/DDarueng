@@ -69,7 +69,10 @@ def classify(con, table):
         FROM met WHERE rent_day >= {MIN_RENT_DAY}""").fetchone()
     con.execute(f"""
     CREATE OR REPLACE TABLE {table} AS
-    SELECT *, CASE
+    SELECT *,
+    -- th: 대여소 분포 기준선 (수요 중앙값 28.2건,
+    --     대여 불가 비율 상위 25% 13.0%, 평균 대수 중앙값 10.5대)
+    CASE
         WHEN rent_day < {MIN_RENT_DAY} THEN '저이용'
         WHEN empty_rate >= {th[1]} AND rent_day >= {th[0]} THEN '공급 부족'
         WHEN empty_rate >= {th[1]} THEN '배치 부족'

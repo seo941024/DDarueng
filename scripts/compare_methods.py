@@ -47,7 +47,8 @@ def main():
         SELECT h1.station_id, h1.class, h2.class,
                h1.rent_day, h1.empty_rate, h1.avg_bikes, h2.rent_day, h2.empty_rate, h2.avg_bikes
         FROM diag_h1 h1 JOIN diag_h2 h2 USING (station_id)
-        WHERE h1.class <> '저이용' AND h2.class <> '저이용'""").fetchall()
+        WHERE h1.class <> '저이용' AND h2.class <> '저이용'
+        ORDER BY h1.station_id  -- 행 순서 고정: k-means 초기값 선택이 순서에 따라 달라짐""").fetchall()
     n = len(rows)
     rule = np.mean([r[1] == r[2] for r in rows])
 

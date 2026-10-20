@@ -360,7 +360,7 @@ class _RefPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     final items = [
       ('하루 평균 반납', '${n1(d.ret)}건', '운영일 기준 일평균 반납 건수'),
-      ('추정 미충족 대여', '${comma(d.lost)}건', '대여 불가 시간대 평균 대여 기준 추정, 분석 기간 합계'),
+      ('추정 미충족 대여', '${comma(d.lost)}건', '대여 불가 시간대 추정, 분석 기간 합계'),
       ('평일 07~09시 순유출', '${d.am >= 0 ? '+' : ''}${n1(d.am)}대', '대여 − 반납 일평균, 양수: 자전거 유출'),
       ('거치대 1개당 하루 평균 대여', d.turnover == null ? '-' : '${n1(d.turnover)}건', '하루 평균 대여 ÷ 거치대 수'),
     ];

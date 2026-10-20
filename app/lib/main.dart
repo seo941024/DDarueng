@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'data.dart';
 import 'diagnosis.dart';
-import 'desktop_shell.dart';
+import 'shell.dart';
 import 'style.dart';
 
 void main() => runApp(const App());
@@ -20,20 +20,20 @@ class _AppState extends State<App> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: '따릉이 대여소 진단',
+      title: '서울 공공자전거 사용 분석 프로그램',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(colorSchemeSeed: navy, fontFamily: 'Pretendard'),
       home: FutureBuilder<(AppData, DiagnosisData)>(
         future: _data,
         builder: (context, snap) {
           if (snap.hasError) {
-            return Scaffold(body: Center(child: Text('데이터를 불러오지 못했습니다: ${snap.error}')));
+            return Scaffold(body: Center(child: Text('데이터 불러오기 실패: ${snap.error}')));
           }
           if (!snap.hasData) {
             return const Scaffold(body: Center(child: CircularProgressIndicator()));
           }
           final (data, diag) = snap.data!;
-          return DesktopShell(data: data, diag: diag);
+          return Shell(data: data, diag: diag);
         },
       ),
     );

@@ -1,11 +1,11 @@
 {
-    "name": "따릉이 공백률",
-    "short_name": "따릉이 공백률",
+    "name": "서울 공공자전거 사용 분석 프로그램",
+    "short_name": "공공자전거 사용 분석",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "따릉이 대여소 시간대별 공백률·대체 대여소 조회",
+    "description": "대여 기록·대여 가능 수량 분석 기반 대여소별 조치 추천",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

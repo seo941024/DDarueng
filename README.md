@@ -17,7 +17,7 @@ Power BI 현황 대시보드 (`powerbi/따릉이_대여소_진단.pbix`)
 ## 목표
 - 수요 × 대여 불가 비율 기준 대여소별 조치 분류
 - 자주 비는 대여소별 1km 안 재배치 상대 대여소 제시
-- 운영자용 Power BI 현황 대시보드, Flutter 데스크톱 진단 도구
+- 운영자용 Power BI 현황 대시보드, Flutter 데스크톱 화면 분석 프로그램
 
 ## 지표 정의 (2025년 운영 기간 기록 기준)
 
@@ -43,7 +43,7 @@ Power BI 현황 대시보드 (`powerbi/따릉이_대여소_진단.pbix`)
 | 방식 비교 | 규칙 기반 · 군집화(k-means) 비교 | numpy | `scripts/compare_methods.py`, `analysis/method_compare.md` |
 | 분석 쿼리 | 시간대·자치구·월별 대여 불가 비율, 운영 점검 대상 | DuckDB SQL | `analysis/queries.sql`, `scripts/run_queries.py` |
 | 대시보드 | 분류 결과 CSV 내보내기, Power BI 보고서 | Power BI · DAX | `scripts/export_powerbi.py`, `powerbi/` |
-| 진단 도구 | Windows 데스크톱 앱 (작업 중) | Flutter | `app/` |
+| 진단 도구 | 서울 공공자전거 사용 분석 프로그램: 현황·분석·조치 추천·대여소 조회 | Flutter | `app/` |
 
 ## 데이터
 
@@ -159,10 +159,22 @@ Power BI 현황 대시보드 (`powerbi/따릉이_대여소_진단.pbix`)
 
 위치 미등록 31곳은 산점도·자치구 그래프에서 제외.
 
-## 앱 (Flutter, 작업 중)
+## 앱: 서울 공공자전거 사용 분석 프로그램 (Flutter)
 
-- 실행 화면: Windows 데스크톱 진단 도구 (`app/lib/desktop_shell.dart`)
-- 대여소 조회 화면 (`search_page.dart` · `detail_page.dart`): 띄어쓰기 무시·대여소 번호 검색, 기록 30일 미만 대여소 상위 목록 제외·참고용 표기, 1분 주기 현재 시각 갱신
+대여 기록·대여 가능 수량 분석 기반 대여소별 조치 추천. 왼쪽 메뉴로 화면 전환, 목록·지도에서 대여소 선택 시 상세 화면.
+
+| 메뉴 | 화면 |
+|---|---|
+| 현황 | 추천 조치별 대여소 수·추천 기준, 자치구별 추천 대여소 수 |
+| 분석 | 대여소 위치별 추천 조치 분포, 자치구 선택 시 범위 확대·조치 구성 비율 |
+| 조치 추천 | 조치별 추천 대여소 목록, 자치구·정렬 기준 선택 |
+| 대여소 조회 | 전체 대여소 검색, 자치구·추천 조치 선택 |
+| 대여소 상세 | 추천 조치·추천 근거, 지표 3개 기준선 비교, 시간대별 대여 불가 비율, 반경 1km 연결 대여소, 참고 지표 |
+
+- 추천 조치는 참고용, 최종 결정은 운영 담당자
+- 조치별 색: 장표·Power BI와 동일 (`app/lib/diagnosis.dart`의 `Act`)
+- 화면 코드: `shell.dart` · `overview_page.dart` · `analysis_page.dart` · `recommend_page.dart` · `station_list_page.dart` · `station_detail.dart`
+- 현재 웹 빌드로 실행, Windows 빌드는 Visual Studio C++ 도구 설치 후 진행
 - 단위 시험 4개 (`app/test/data_test.dart`): 근사 거리, 요일 구분, 검색, 상위 목록
 - 거리: 서울 위도 기준 근사 (경도 1도 약 88.2km, 위도 1도 약 111km)
 - 글꼴: Pretendard 1.3.9 앱 포함 (SIL OFL 1.1, `app/fonts/LICENSE.txt`)
@@ -216,4 +228,4 @@ data/       원본·DB (저장소 제외)
 | 재배치 상대: 1km 안 직선거리 | 실제 이동 경로·시간 미반영 | 도로 경로 API 연동 |
 | 조치 제안 | 조치 후 효과 미검증 | 조치 전후 대여 불가 비율·대여 비교 |
 
-- 진단 도구: Windows 데스크톱 앱 완성, 작은 지도(OpenStreetMap) 연동
+- 분석 프로그램: Windows 빌드

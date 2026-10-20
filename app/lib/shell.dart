@@ -115,7 +115,7 @@ class _SideMenu extends StatelessWidget {
           ),
           const Padding(
             padding: EdgeInsets.only(left: 8, top: 4, bottom: 28),
-            child: Text('대여 기록·대여 가능 수량 분석 기반 대여소별 조치 추천', style: TextStyle(fontSize: 12, height: 1.45, color: Color(0xFFB8C4D6))),
+            child: Text('대여 기록·대여 가능 수량 분석\n대여소별 조치 추천', style: TextStyle(fontSize: 12, height: 1.45, color: Color(0xFFB8C4D6))),
           ),
           for (final m in Menu.values)
             Padding(

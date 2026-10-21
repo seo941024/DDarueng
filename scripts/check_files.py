@@ -10,7 +10,7 @@ ENCODINGS = ("utf-8-sig", "cp949")
 
 
 def read_head(src, name):
-    # 서울시 파일은 UTF-8과 CP949가 섞여 있어 둘 다 시도
+    # 인코딩 미지정 파일: UTF-8 실패 시 CP949 시도, 2025년 수량·대여 기록 CSV는 CP949
     for enc in ENCODINGS:
         try:
             with src() as f:

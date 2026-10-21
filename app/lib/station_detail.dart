@@ -1,4 +1,4 @@
-// 대여소 상세: 추천 조치와 근거, 지표 3개와 기준선, 시간대별 대여 불가 비율, 연결 대여소, 참고 지표
+// 대여소 상세: 추천 조치와 근거, 지표 3개와 기준선, 시간대별 전량 대여 비율, 연결 대여소, 참고 지표
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
@@ -106,7 +106,7 @@ class _StationDetailState extends State<StationDetail> {
         const SizedBox(width: 14),
         Expanded(
           child: _MetricCard(
-            label: '대여 불가 비율',
+            label: '전량 대여 비율',
             value: d.empty,
             unit: '%',
             base: diag.emptyQ3,
@@ -118,7 +118,7 @@ class _StationDetailState extends State<StationDetail> {
         const SizedBox(width: 14),
         Expanded(
           child: _MetricCard(
-            label: '평균 주차 대수',
+            label: '평균 거치 자전거 수',
             value: d.bikes,
             unit: '대',
             base: diag.bikesMedian,
@@ -215,7 +215,7 @@ class _HourlyPanel extends StatelessWidget {
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(children: [
           Expanded(
-            child: SectionTitle('시간대별 대여 불가 비율',
+            child: SectionTitle('시간대별 전량 대여 비율',
                 note: station == null ? null : '${day.label} 기록 ${station.daysOf(day)}일 기준'),
           ),
           SegmentedButton<DayType>(
@@ -338,7 +338,7 @@ class _LinkedPanel extends StatelessWidget {
                   SizedBox(
                     width: 120,
                     child: Text(
-                      toLess ? '평균 주차 ${n1(o.bikes)}대' : '대여 불가 ${n1(o.empty)}%',
+                      toLess ? '평균 거치 ${n1(o.bikes)}대' : '전량 대여 ${n1(o.empty)}%',
                       textAlign: TextAlign.right,
                       style: const TextStyle(fontSize: 12.5, color: ink),
                     ),
@@ -360,7 +360,7 @@ class _RefPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     final items = [
       ('하루 평균 반납', '${n1(d.ret)}건', '운영일 기준 일평균 반납 건수'),
-      ('추정 미충족 대여', '${comma(d.lost)}건', '대여 불가 시간대 추정, 분석 기간 합계'),
+      ('추정 미충족 대여', '${comma(d.lost)}건', '전량 대여 시간대 추정, 분석 기간 합계'),
       ('평일 07~09시 순유출', '${d.am >= 0 ? '+' : ''}${n1(d.am)}대', '대여 − 반납 일평균, 양수: 자전거 유출'),
       ('거치대 1개당 하루 평균 대여', d.turnover == null ? '-' : '${n1(d.turnover)}건', '하루 평균 대여 ÷ 거치대 수'),
     ];

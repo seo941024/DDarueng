@@ -1,4 +1,4 @@
-# 대여소 진단: 수요(대여) × 공급 상태(대여 불가 비율)로 분류, 조치 제안, 상·하반기 안정성 검증, 앱용 JSON
+# 대여소 진단: 수요(대여) × 공급 상태(전량 대여 비율)로 분류, 조치 제안, 상·하반기 안정성 검증, 앱용 JSON
 # 사용: python scripts/build_diagnosis.py  (load.py · build_metrics.py · load_rentals.py 다음)
 import json
 import sys
@@ -63,7 +63,7 @@ def metrics(con, start, end):
 
 
 def classify(con, table):
-    """met → table: 기준선은 대여소 분포에서 산출 (수요 중앙값, 대여 불가 비율 상위 25%, 평균 대수 중앙값)"""
+    """met → table: 기준선은 대여소 분포에서 산출 (수요 중앙값, 전량 대여 비율 상위 25%, 거치 대수 중앙값)"""
     th = con.execute(f"""
         SELECT median(rent_day), quantile_cont(empty_rate, 0.75), median(avg_bikes)
         FROM met WHERE rent_day >= {MIN_RENT_DAY}""").fetchone()
@@ -71,7 +71,7 @@ def classify(con, table):
     CREATE OR REPLACE TABLE {table} AS
     SELECT *,
     -- th: 대여소 분포 기준선 (수요 중앙값 28.2건,
-    --     대여 불가 비율 상위 25% 13.0%, 평균 대수 중앙값 10.5대)
+    --     전량 대여 비율 상위 25% 13.0%, 거치 대수 중앙값 10.5대)
     CASE
         WHEN rent_day < {MIN_RENT_DAY} THEN '저이용'
         WHEN empty_rate >= {th[1]} AND rent_day >= {th[0]} THEN '공급 부족'
@@ -136,7 +136,7 @@ def main():
              "## 기준선 (대여소 분포에서 산출)", "",
              f"- 수요 기준: 일평균 대여 중앙값 {th['rent_day_median']:.1f}건",
              f"- 공백 기준: 공백률 상위 25% 경계 {th['empty_rate_q3'] * 100:.1f}%",
-             f"- 과잉 기준: 평균 주차 대수 중앙값 {th['avg_bikes_median']:.1f}대",
+             f"- 과잉 기준: 평균 거치 자전거 수 중앙값 {th['avg_bikes_median']:.1f}대",
              f"- 저이용: 일평균 대여 {MIN_RENT_DAY:.0f}건 미만 또는 운영 기록 없음", "",
              "## 분류별 대여소 수", "",
              "| 분류 | 대여소 | 제안 조치 | 실제 대여 | 놓친 대여(추정) |", "|---|---|---|---|---|"]

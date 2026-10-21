@@ -161,7 +161,8 @@ class _MixPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     final total = list.length;
     final counts = {for (final a in Act.values) a: list.where((d) => d.act == a).length};
-    final target = total - counts[Act.keep]!;
+    final shortage = counts[Act.expand]! + counts[Act.more]!;
+    final surplus = counts[Act.less]!;
     String pct(int n) => total == 0 ? '-' : '${(n / total * 100).toStringAsFixed(1)}%';
     return Panel(
       padding: const EdgeInsets.fromLTRB(20, 18, 20, 18),
@@ -200,20 +201,52 @@ class _MixPanel extends StatelessWidget {
             ]),
           ),
         const SizedBox(height: 18),
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(14),
-          decoration: BoxDecoration(color: panel, borderRadius: BorderRadius.circular(8)),
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            const Text('조치 추천 대상', style: TextStyle(fontSize: 12.5, color: gray)),
-            const SizedBox(height: 4),
-            Text('${comma(target)}곳 · ${pct(target)}',
-                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: navy)),
-            const SizedBox(height: 2),
-            const Text('현 상태 유지 제외', style: TextStyle(fontSize: 11.5, color: gray)),
-          ]),
-        ),
+        // 방향이 반대인 조치는 합치지 않음: 자전거 부족과 잉여를 나눠 구 내 재배치 여지 표시
+        _SideBox('자전거 부족', shortage, pct(shortage), '증설 검토 + 배치 확대', Act.more.color),
+        const SizedBox(height: 10),
+        _SideBox('자전거 잉여', surplus, pct(surplus), '배치 축소', Act.less.color),
       ]),
     );
   }
+}
+
+class _SideBox extends StatelessWidget {
+  final String label;
+  final int count;
+  final String pct;
+  final String note;
+  final Color color;
+  const _SideBox(this.label, this.count, this.pct, this.note, this.color);
+
+  @override
+  Widget build(BuildContext context) => ClipRRect(
+        borderRadius: BorderRadius.circular(8),
+        child: Container(
+          color: panel,
+          child: IntrinsicHeight(
+            child: Row(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+              Container(width: 4, color: color),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+                  // 이름·건수·비율 한 줄, 설명은 아래 한 줄
+                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    Row(crossAxisAlignment: CrossAxisAlignment.baseline, textBaseline: TextBaseline.alphabetic, children: [
+                      Text(label, style: const TextStyle(fontSize: 13.5, fontWeight: FontWeight.bold, color: ink)),
+                      const Spacer(),
+                      Text('${comma(count)}곳', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: color)),
+                      const SizedBox(width: 8),
+                      SizedBox(
+                          width: 52,
+                          child: Text(pct, textAlign: TextAlign.right, style: const TextStyle(fontSize: 12.5, color: gray))),
+                    ]),
+                    const SizedBox(height: 2),
+                    Text(note, maxLines: 1, style: const TextStyle(fontSize: 11.5, color: gray)),
+                  ]),
+                ),
+              ),
+            ]),
+          ),
+        ),
+      );
 }

@@ -25,10 +25,10 @@ enum Act {
 
 /// 목록 정렬 기준
 enum SortKey {
-  empty('대여 불가 비율 높은 순'),
+  empty('전량 대여 비율 높은 순'),
   rent('하루 평균 대여 많은 순'),
   rentAsc('하루 평균 대여 적은 순'),
-  bikes('평균 주차 대수 많은 순');
+  bikes('평균 거치 자전거 수 많은 순');
 
   final String label;
   const SortKey(this.label);
@@ -55,7 +55,7 @@ class Diagnosis {
   final double rent; // 일평균 대여
   final double ret; // 일평균 반납
   final double? empty; // 공백률(%)
-  final double? bikes; // 평균 주차 대수
+  final double? bikes; // 평균 거치 자전거 수
   final double am; // 평일 7~9시 순유출(대여 - 반납)
   final int racks;
   final List<int> partners; // 1km 안 과잉 대여소 (가까운 순)
@@ -121,7 +121,7 @@ class DiagnosisData {
     return m;
   }
 
-  /// 기준선: 하루 평균 대여 중앙값(건), 대여 불가 비율 상위 25% 경계(%), 평균 주차 대수 중앙값(대)
+  /// 기준선: 하루 평균 대여 중앙값(건), 전량 대여 비율 상위 25% 경계(%), 평균 거치 자전거 수 중앙값(대)
   double get rentMedian => thresholds['rent_day_median']!;
   double get emptyQ3 => thresholds['empty_rate_q3']! * 100;
   double get bikesMedian => thresholds['avg_bikes_median']!;
@@ -131,10 +131,10 @@ class DiagnosisData {
 
   /// 조치별 추천 기준 문장
   String criteria(Act a) => switch (a) {
-        Act.expand => '하루 평균 대여 중앙값 ${f1(rentMedian)}건 이상 · 대여 불가 비율 상위 25% 기준 ${f1(emptyQ3)}% 이상',
-        Act.more => '하루 평균 대여 중앙값 ${f1(rentMedian)}건 미만 · 대여 불가 비율 상위 25% 기준 ${f1(emptyQ3)}% 이상',
+        Act.expand => '하루 평균 대여 중앙값 ${f1(rentMedian)}건 이상 · 전량 대여 비율 상위 25% 기준 ${f1(emptyQ3)}% 이상',
+        Act.more => '하루 평균 대여 중앙값 ${f1(rentMedian)}건 미만 · 전량 대여 비율 상위 25% 기준 ${f1(emptyQ3)}% 이상',
         Act.less =>
-          '대여 불가 비율 ${f1(emptyQ3)}% 미만 · 하루 평균 대여 중앙값 미만 · 평균 주차 대수 중앙값 ${f1(bikesMedian)}대 이상',
+          '전량 대여 비율 ${f1(emptyQ3)}% 미만 · 하루 평균 대여 중앙값 미만 · 평균 거치 자전거 수 중앙값 ${f1(bikesMedian)}대 이상',
         Act.close => '하루 평균 대여 ${f1(minRent)}건 미만 또는 운영 기록 부재',
         Act.keep => '추천 조치 조건 미해당',
       };
@@ -143,9 +143,9 @@ class DiagnosisData {
   List<String> reasons(Diagnosis d) {
     String rentCmp() => '하루 평균 대여 ${f1(d.rent)}건: 중앙값 ${f1(rentMedian)}건 ${d.rent >= rentMedian ? '이상' : '미만'}';
     String emptyCmp() =>
-        '대여 불가 비율 ${n(d.empty)}%: 기준 ${f1(emptyQ3)}% ${(d.empty ?? 0) >= emptyQ3 ? '이상' : '미만'}';
+        '전량 대여 비율 ${n(d.empty)}%: 기준 ${f1(emptyQ3)}% ${(d.empty ?? 0) >= emptyQ3 ? '이상' : '미만'}';
     String bikesCmp() =>
-        '평균 주차 대수 ${n(d.bikes)}대: 중앙값 ${f1(bikesMedian)}대 ${(d.bikes ?? 0) >= bikesMedian ? '이상' : '미만'}';
+        '평균 거치 자전거 수 ${n(d.bikes)}대: 중앙값 ${f1(bikesMedian)}대 ${(d.bikes ?? 0) >= bikesMedian ? '이상' : '미만'}';
     return switch (d.act) {
       Act.expand || Act.more => [rentCmp(), emptyCmp()],
       Act.less => [emptyCmp(), rentCmp(), bikesCmp()],

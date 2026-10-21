@@ -75,8 +75,8 @@ class StationTable extends StatelessWidget {
           headText('자치구'),
           if (showAct) headText('추천 조치'),
           headText('하루 평균 대여${mark(SortKey.rent)}', active: on(SortKey.rent), align: TextAlign.right),
-          headText('대여 불가 비율${mark(SortKey.empty)}', active: on(SortKey.empty), align: TextAlign.right),
-          headText('평균 주차 대수${mark(SortKey.bikes)}', active: on(SortKey.bikes), align: TextAlign.right),
+          headText('전량 대여 비율${mark(SortKey.empty)}', active: on(SortKey.empty), align: TextAlign.right),
+          headText('평균 거치 자전거 수${mark(SortKey.bikes)}', active: on(SortKey.bikes), align: TextAlign.right),
         ], flex, head: true),
         Expanded(
           child: list.isEmpty

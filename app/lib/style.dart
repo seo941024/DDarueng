@@ -9,18 +9,6 @@ const panel = Color(0xFFF5F7FA);
 const ink = Color(0xFF212529);
 const barIdle = Color(0xFFC5CEDB);
 
-/// 이전 화면용: 공백률 표시
-class RateText extends StatelessWidget {
-  final int rate;
-  const RateText(this.rate, {super.key});
-
-  @override
-  Widget build(BuildContext context) => Text(
-        '공백률 $rate%',
-        style: TextStyle(fontWeight: FontWeight.bold, color: rate >= 50 ? navy : gray),
-      );
-}
-
 String n1(double? v) => v == null ? '-' : v.toStringAsFixed(1);
 
 String comma(num v) {

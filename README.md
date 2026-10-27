@@ -175,8 +175,9 @@ Power BI 현황 대시보드 (`powerbi/따릉이_대여소_진단.pbix`)
 - 추천 조치는 참고용, 최종 결정은 운영 담당자
 - 조치별 색: 장표·Power BI와 동일 (`app/lib/diagnosis.dart`의 `Act`)
 - 화면 코드: `shell.dart` · `overview_page.dart` · `analysis_page.dart` · `recommend_page.dart` · `station_list_page.dart` · `station_detail.dart`
+- 데이터·판정 코드: `data.dart` 대여소 정보·시간대별 전량 대여 비율, `diagnosis.dart` 추천 조치·추천 근거·연결 대여소, `style.dart` 공통 색·위젯
 - 웹 빌드로 실행, Windows 빌드 미진행
-- 단위 시험 4개 (`app/test/data_test.dart`): 근사 거리, 요일 구분, 검색, 상위 목록
+- 단위 시험 6개 `app/test/diagnosis_test.dart`: 근사 거리, 검색, 목록 정렬, 추천 근거, 추천 기준 문장, 연결 대여소
 - 거리: 서울 위도 기준 근사 (경도 1도 약 88.2km, 위도 1도 약 111km)
 - 글꼴: Pretendard 1.3.9 앱 포함 (SIL OFL 1.1, `app/fonts/LICENSE.txt`)
 

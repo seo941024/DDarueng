@@ -97,12 +97,12 @@ class DiagnosisData {
   final Map<String, String> actions;
   final Map<int, Diagnosis> byId;
 
-  DiagnosisData._(this.period, this.thresholds, this.actions, this.byId);
+  DiagnosisData(this.period, this.thresholds, this.actions, this.byId);
 
   static Future<DiagnosisData> load() async {
     final j = jsonDecode(await rootBundle.loadString('assets/diagnosis.json')) as Map<String, dynamic>;
     final stations = j['stations'] as Map<String, dynamic>;
-    return DiagnosisData._(
+    return DiagnosisData(
       (j['period'] as List).cast<String>(),
       (j['thresholds'] as Map<String, dynamic>).map((k, v) => MapEntry(k, (v as num).toDouble())),
       (j['actions'] as Map<String, dynamic>).cast<String, String>(),
@@ -157,6 +157,7 @@ class DiagnosisData {
   String n(double? v) => v == null ? '-' : v.toStringAsFixed(1);
 
   /// 조치별 목록: 자치구·검색어 필터, 정렬 기준 적용, 같으면 대여소 번호 순
+  /// 검색어: 띄어쓰기 무시, 대여소 번호 일치. 대여소명에 번출구·번 출구 표기 혼재
   List<Diagnosis> listOf(Act? a, {String? gu, String query = '', SortKey? sort}) {
     final q = query.replaceAll(RegExp(r'\s+'), '');
     final id = int.tryParse(q);
@@ -199,27 +200,9 @@ class DiagnosisData {
     }
     return const [];
   }
-
-  /// 분류별 우선순위 점수 (클수록 먼저)
-  static double priority(Diagnosis d) => switch (d.cls) {
-        '공급 부족' || '배치 부족' => d.lost.toDouble(), // 놓친 대여(추정) 많은 순
-        '과잉' => d.bikes ?? 0, // 평균 대수 많은 순
-        '저이용' => -d.rent, // 대여 적은 순
-        _ => d.rent,
-      };
-
-  /// 분류별 우선순위 정렬, 같으면 대여소 번호 순
-  List<Diagnosis> ranked(String cls, {String? gu}) {
-    final list = byId.values.where((d) => d.cls == cls && (gu == null || d.gu == gu)).toList();
-    list.sort((a, b) {
-      final c = priority(b).compareTo(priority(a));
-      return c != 0 ? c : a.id.compareTo(b.id);
-    });
-    return list;
-  }
 }
 
-/// 근사 거리(m): data.dart와 같은 방식 (서울 기준 경도 1도 약 88.2km, 위도 1도 약 111km)
+/// 서울 위도 약 37.5도 기준 근사 거리(m): 경도 1도 약 88.2km, 위도 1도 약 111km
 double meters(Diagnosis a, Diagnosis b) {
   final dx = (a.lon - b.lon) * 88200;
   final dy = (a.lat - b.lat) * 111000;

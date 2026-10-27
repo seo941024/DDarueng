@@ -1,6 +1,5 @@
 // 앱 데이터: 대여소 정보와 시간대별 공백률 (build_metrics.py가 만든 JSON)
 import 'dart:convert';
-import 'dart:math';
 
 import 'package:flutter/services.dart';
 
@@ -36,22 +35,9 @@ enum DayType {
   final String key;
   final String label;
   const DayType(this.key, this.label);
-
-  // 공휴일 목록은 없으므로 오늘이 토·일이면 휴일
-  static DayType of(DateTime t) =>
-      t.weekday >= DateTime.saturday ? DayType.holiday : DayType.weekday;
-}
-
-class Nearby {
-  final Station station;
-  final double meters;
-  const Nearby(this.station, this.meters);
 }
 
 class AppData {
-  /// 기록 30일 미만: 공백률 변동 폭이 커서 상위 목록 제외, 상세 화면 참고용 표기
-  static const minDays = 30;
-
   final List<Station> stations;
   final Map<int, Map<String, List<int>>> _rates; // 대여소 번호 → 요일 구분 → 24시간 공백률(%)
 
@@ -72,50 +58,4 @@ class AppData {
   }
 
   List<int> rates(int stationId, DayType day) => _rates[stationId]![day.key]!;
-
-  int rateAt(int stationId, DayType day, int hour) => rates(stationId, day)[hour];
-
-  /// 이름·자치구·대여소 번호 검색
-  /// 대여소명 표기 혼재(번출구 385곳, 번 출구 120곳) → 띄어쓰기 무시
-  List<Station> search(String query) {
-    // 공백 무시 비교, 대여소 번호 일치 검색
-    final q = _compact(query);  // 공백 제거
-    final id = int.tryParse(q);
-    final hits = stations.where((s) => s.id == id ||
-        _compact(s.name).contains(q) ||
-        _compact(s.gu).contains(q));
-    return hits.toList();
-  }
-
-  /// 지금 시간 공백률 높은 대여소 (기록 30일 미만 제외, 동률 시 대여소 번호 순)
-  List<Station> emptiest(DayType day, int hour, {int limit = 20}) {
-    final list = stations.where((s) => s.daysOf(day) >= minDays).toList()
-      ..sort((a, b) {
-        final r = rateAt(b.id, day, hour).compareTo(rateAt(a.id, day, hour));
-        return r != 0 ? r : a.id.compareTo(b.id);
-      });
-    return list.take(limit).toList();
-  }
-
-  /// 반경 안 대여소, 공백률 낮은 순 (같으면 가까운 순)
-  List<Nearby> nearby(Station from, DayType day, int hour, {double radius = 500}) {
-    final list = <Nearby>[
-      for (final s in stations)
-        if (s.id != from.id && distance(from, s) <= radius) Nearby(s, distance(from, s)),
-    ];
-    list.sort((a, b) {
-      final r = rateAt(a.station.id, day, hour).compareTo(rateAt(b.station.id, day, hour));
-      return r != 0 ? r : a.meters.compareTo(b.meters);
-    });
-    return list;
-  }
-}
-
-String _compact(String s) => s.replaceAll(RegExp(r'\s+'), '');
-
-/// 서울 위도(약 37.5도) 기준 근사 거리(m): 경도 1도 약 88.2km, 위도 1도 약 111km
-double distance(Station a, Station b) {
-  final dx = (a.lon - b.lon) * 88200;
-  final dy = (a.lat - b.lat) * 111000;
-  return sqrt(dx * dx + dy * dy);
 }

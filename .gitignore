@@ -5,3 +5,8 @@ data/*.db
 data/*.duckdb
 data/*.duckdb.wal
 *.part
+
+# 작업용 파일 (PC에만 보관)
+인수인계_*.md
+.claude/
+.vscode/

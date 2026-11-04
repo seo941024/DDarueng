@@ -1,5 +1,5 @@
 name: ddareungi_app
-description: "따릉이 대여소 시간대별 공백률·대체 대여소 조회 앱"
+description: "서울 공공자전거 대여소별 조치 추천 분석 앱"
 publish_to: 'none'
 
 version: 1.0.0+1

@@ -1,6 +1,6 @@
-# 따릉이 대여 기록 기반 대여소 진단 프로그램
+# 서울 공공자전거 대여소 진단 프로그램
 
-서울시 공공자전거 따릉이 2025년 **대여 가능 수량 2,418만 행 · 대여 기록 3,737만 건**으로 대여소별 수요와 공급 상태를 측정하고,
+서울시 공공자전거 따릉이 2025년 **대여 가능 수량과 대여 기록**으로 대여소별 수요와 공급 상태를 측정하고,
 운영자가 검토할 조치(대여소 증설 검토 · 자전거 배치 확대 · 자전거 배치 축소 · 대여소 이전·폐쇄 검토)를 대여소마다 분류하는 프로젝트.
 
 <img src="docs/readme_img/powerbi_dashboard.png" width="860" alt="Power BI 현황 대시보드">
@@ -17,7 +17,7 @@ Power BI 현황 대시보드 (`powerbi/따릉이_대여소_진단.pbix`)
 ## 목표
 - 수요 × 전량 대여 비율 기준 대여소별 조치 분류
 - 자주 비는 대여소별 1km 안 재배치 상대 대여소 제시
-- 운영자용 Power BI 현황 대시보드, Flutter 데스크톱 화면 분석 프로그램
+- 운영자용 Power BI 현황 대시보드, Flutter 분석 프로그램
 
 ## 지표 정의 (2025년 운영 기간 기록 기준)
 
@@ -49,8 +49,8 @@ Power BI 현황 대시보드 (`powerbi/따릉이_대여소_진단.pbix`)
 
 | 데이터 | 출처 | 형식 |
 |---|---|---|
-| 대여 가능 수량 (1시간 단위) | [서울 열린데이터광장 OA-22382](https://data.seoul.go.kr/dataList/OA-22382/F/1/datasetView.do) | 분기별 zip 4개, 월별 CSV 12개 (CP949), 약 382MB |
-| 대여 기록 | [서울 열린데이터광장 OA-15182](https://data.seoul.go.kr/dataList/OA-15182/F/1/datasetView.do) | 연 zip 1개 1.78GB, 월별 CSV 12개 (CP949), 3,737만 건 |
+| 대여 가능 수량 (1시간 단위) | [서울 열린데이터광장 OA-22382](https://data.seoul.go.kr/dataList/OA-22382/F/1/datasetView.do) | 분기별 zip, 월별 CSV (CP949) |
+| 대여 기록 | [서울 열린데이터광장 OA-15182](https://data.seoul.go.kr/dataList/OA-15182/F/1/datasetView.do) | 연 zip, 월별 CSV (CP949) |
 | 대여소 정보 (위치·자치구·거치대 수) | [서울 열린데이터광장 OA-13252](https://data.seoul.go.kr/dataList/OA-13252/F/1/datasetView.do) | xlsx, 2025년 12월 기준 |
 
 - 수량 파일 칼럼 "거치대수량"의 실제 값: 시간대별 거치 자전거 수 (102번 대여소: 거치대 15개, 2025년 4월 24일 하루 58대~10대 변동) → `bikes`로 변경
@@ -61,16 +61,15 @@ Power BI 현황 대시보드 (`powerbi/따릉이_대여소_진단.pbix`)
 
 ## 데이터 점검과 처리
 
-| 점검 항목 | 값 | 처리 |
-|---|---|---|
-| 전체 기록 | 24,188,026 | |
-| 중복·음수 | 0 | 처리 불필요 |
-| 24시간 중 빠진 시간이 있는 대여소·날짜 | 17,149 | 보간 없이 실측 기록만 사용 (6개 날짜는 전 대여소 공통 1시간 누락) |
-| 1년 내내 0대인 대여소 | 22 | 제외 |
-| 운영 기간(첫·마지막 자전거 기록) 밖 기록 | 122,973 | 개설 전·폐쇄 후 기록으로 보고 제외 |
-| 자전거가 있던 날 10일 미만인 대여소·월 | 508 | 운영 중단으로 보고 그달 제외 |
-| 대여소 정보에 없는 대여소 번호 | 36 | 위치 정보 없음, 지도·재배치 상대·앱 제외 |
-| 자전거 수 > 거치대 수 × 3 | 1,402,625 (5.8%) | 거치대 수 기준 만차 판단 불가 → 0대 기록 기준 전량 대여 비율만 사용 |
+| 점검 항목 | 처리 |
+|---|---|
+| 중복·음수 | 없음, 처리 불필요 |
+| 24시간 중 빠진 시간이 있는 대여소·날짜 | 보간 없이 있는 기록만 사용 |
+| 1년 내내 0대인 대여소 | 제외 |
+| 운영 기간(첫·마지막 자전거 기록) 밖 기록 | 개설 전·폐쇄 후 기록으로 보고 제외 |
+| 자전거가 있던 날 10일 미만인 대여소·월 | 운영 중단으로 보고 그달 제외 |
+| 대여소 정보에 없는 대여소 번호 | 위치 정보 없음, 지도·재배치 상대·앱 제외 |
+| 자전거 수가 거치대 수의 3배를 넘는 기록 | 거치대 수 기준 만차 판단 불가 → 0대 기록 기준 전량 대여 비율만 사용 |
 
 ### 미운영 대여소 판별 기준 수정
 1. 초기 기준 "한 달 내내 0대인 달 제외" 적용 시 휴일 16시 전량 대여 비율 100% 대여소 4곳 상위 노출
@@ -134,17 +133,11 @@ Power BI 현황 대시보드 (`powerbi/따릉이_대여소_진단.pbix`)
 
 ## DB 선택: SQLite와 DuckDB (`analysis/db_compare.md`)
 
-같은 데이터·같은 단계·같은 PC 측정.
-
-| 단계 | SQLite | DuckDB |
-|---|---|---|
-| 적재 (CSV 12개) | 151초 | 47초 |
-| 정제·집계 | 592초 | 7초 |
-| DB 파일 크기 | 1,130MB | 77MB |
-| 월별 전량 대여 비율 쿼리 (전체 행 집계) | 222초 | 0.52초 |
+같은 데이터·같은 단계로 두 DB를 비교한 뒤 선택.
 
 - 두 DB 모두 서버 없는 파일 DB, 결과값 동일
-- DuckDB: 열 단위 저장·압축, 수천만 행 집계에 적합 → 판별 기준 변경 시마다 재집계하는 이 프로젝트에 선택
+- SQLite: 행 단위 저장, 기록을 한 건씩 넣고 조회하는 작업에 적합
+- DuckDB: 열 단위 저장·압축, 대량 기록 집계에 적합 → 판별 기준 변경 시마다 재집계하는 이 프로젝트에 선택
 
 ---
 
@@ -176,7 +169,7 @@ Power BI 현황 대시보드 (`powerbi/따릉이_대여소_진단.pbix`)
 - 조치별 색: 장표·Power BI와 동일 (`app/lib/diagnosis.dart`의 `Act`)
 - 화면 코드: `shell.dart` · `overview_page.dart` · `analysis_page.dart` · `recommend_page.dart` · `station_list_page.dart` · `station_detail.dart`
 - 데이터·판정 코드: `data.dart` 대여소 정보·시간대별 전량 대여 비율, `diagnosis.dart` 추천 조치·추천 근거·연결 대여소, `style.dart` 공통 색·위젯
-- 웹 빌드로 실행, Windows 빌드 미진행
+- Flutter 웹 빌드로 실행
 - 단위 시험 6개 `app/test/diagnosis_test.dart`: 근사 거리, 검색, 목록 정렬, 추천 근거, 추천 기준 문장, 연결 대여소
 - 거리: 서울 위도 기준 근사 (경도 1도 약 88.2km, 위도 1도 약 111km)
 - 글꼴: Pretendard 1.3.9 앱 포함 (SIL OFL 1.1, `app/fonts/LICENSE.txt`)
@@ -195,7 +188,7 @@ Power BI 현황 대시보드 (`powerbi/따릉이_대여소_진단.pbix`)
 ```
 python -m venv .venv
 .venv\Scripts\python -m pip install -r requirements.txt
-.venv\Scripts\python -I scripts\fetch.py             # 원본 내려받기 (약 2.2GB)
+.venv\Scripts\python -I scripts\fetch.py             # 원본 내려받기
 .venv\Scripts\python -I scripts\load.py              # 대여 가능 수량 DuckDB 적재
 .venv\Scripts\python -I scripts\build_metrics.py     # 정제·집계·앱용 JSON
 .venv\Scripts\python -I scripts\load_rentals.py      # 대여 기록 → 대여소·시간대별 대여·반납 수

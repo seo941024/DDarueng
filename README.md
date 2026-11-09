@@ -76,6 +76,12 @@ flowchart LR
 | 대여소 정보에 없는 대여소 번호 | 위치 정보가 없어 지도·연결 대여소·앱에서 제외 |
 | 자전거 수가 거치대 수의 3배를 넘는 기록 | 거치대 수로 만차 판단이 안 되므로 0대 기록 기준 전량 대여 비율만 사용 |
 
+실행 결과
+
+| `check_files.py` 원본 파일 점검 | 데이터 점검 결과 문서 |
+|---|---|
+| <img src="docs/readme_img/scripts_check_files.png" width="420"> | <img src="docs/readme_img/analysis_data_quality.png" width="420"> |
+
 ## 2. 지표와 조치 분류
 
 | 지표 | 정의 |
@@ -96,6 +102,12 @@ flowchart LR
 - 연결 대여소: 증설·배치 확대 대상마다 반경 1km 안의 배치 축소 대상을 거리순으로 연결
 - 검증: 상반기와 하반기를 따로 분류해 같은 대여소의 분류가 유지되는지 확인
 
+실행 결과
+
+| `build_diagnosis.py` 분류 실행 | 분류 요약 문서 |
+|---|---|
+| <img src="docs/readme_img/scripts_build_diagnosis.png" width="420"> | <img src="docs/readme_img/analysis_diagnosis_summary.png" width="420"> |
+
 ### 분류 방식 선택
 
 같은 지표 3개로 규칙 기반 분류와 k-means 군집화를 비교한 뒤 규칙 기반 채택. k-means는 numpy로 구현하고 초기값 10가지로 반복 실행.
@@ -109,6 +121,12 @@ flowchart LR
 
 수요 예측 모델은 쓰지 않음. 목적이 미래 수요 예측이 아닌 2025년 운영 기록 기반 현황 분류이기 때문.
 
+실행 결과
+
+| `compare_methods.py` 규칙 기반과 k-means 비교 | 비교 결과 문서 |
+|---|---|
+| <img src="docs/readme_img/scripts_compare_methods.png" width="420"> | <img src="docs/readme_img/analysis_method_compare.png" width="420"> |
+
 ## 3. SQL 분석
 
 | SQL 기법 | 사용 위치 |
@@ -121,6 +139,12 @@ flowchart LR
 | 정렬 기준 고정 | 반올림 전 값으로 정렬하고 동률이면 대여소 번호순, 여러 번 실행해도 같은 순위 |
 
 분석 결과 요약: 하루 평균 대여가 적은 대여소일수록 전량 대여 비율이 높음, 평일에는 오전 10시에 가장 높고 17~18시에 가장 낮음. 세부 결과는 `analysis/query_results.md`.
+
+실행 결과
+
+| 쿼리 1 결과 그래프 | 쿼리 2 결과 |
+|---|---|
+| <img src="docs/readme_img/analysis_query1_chart.png" width="420"> | <img src="docs/readme_img/analysis_query2.png" width="420"> |
 
 ## 4. Power BI 현황 대시보드
 
@@ -146,6 +170,20 @@ flowchart LR
 - 화면 코드와 판정 코드 분리: 화면은 `*_page.dart`, 대여소 데이터는 `data.dart`, 추천 조치·근거·연결 대여소 판정은 `diagnosis.dart`
 - 단위 시험 `app/test/diagnosis_test.dart`: 거리 계산, 검색, 목록 정렬, 추천 근거, 추천 기준 문장, 연결 대여소
 - 추천 조치는 참고용이고 최종 결정은 운영 담당자 몫
+
+실행 화면
+
+| 현황 | 분석 |
+|---|---|
+| <img src="docs/readme_img/app_overview.png" width="420"> | <img src="docs/readme_img/app_analysis.png" width="420"> |
+
+| 조치 추천 | 대여소 조회, 망원 검색 |
+|---|---|
+| <img src="docs/readme_img/app_recommend.png" width="420"> | <img src="docs/readme_img/app_stations_search.png" width="420"> |
+
+| 대여소 상세 |   |
+|---|---|
+| <img src="docs/readme_img/app_detail_expand.png" width="420"> |   |
 
 ---
 

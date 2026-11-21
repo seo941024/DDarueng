@@ -2,9 +2,9 @@
 
 서울시 공공자전거 대여 기록과 대여 가능 수량 기반 대여소별 수요·공급 상태 진단, 대여소마다 검토할 운영 조치 분류.
 
-<img src="docs/readme_img/powerbi_dashboard.png" width="860" alt="Power BI 현황 대시보드">
+<img src="docs/readme_img/ddareungi_demo.gif" width="860" alt="화면 순서: Power BI 현황 대시보드, Flutter 분석 프로그램의 현황·분석·조치 추천·대여소 조회·대여소 상세">
 
-*Power BI 현황 대시보드. 조치별 대여소 수, 대여소 위치, 자치구별 조치 대상, 대여소 목록.*
+*화면 순서: Power BI 현황 대시보드 → Flutter 분석 프로그램(현황 → 분석 → 조치 추천 → 대여소 조회 → 대여소 상세).*
 
 ---
 
@@ -154,6 +154,10 @@ flowchart LR
 | 화면 | 조치별 대여소 수, 위경도 산점도, 자치구별 조치 대상, 전량 대여 비율 높은 순 대여소 목록 |
 | 연동 | 자치구·조치 선택 시 그래프와 목록 함께 필터 |
 | DAX | `조치 대상 수 = CALCULATE([대여소 수], KEEPFILTERS(stations[조치] <> "현 상태 유지"))` |
+
+<img src="docs/readme_img/powerbi_dashboard.png" width="860" alt="Power BI 현황 대시보드">
+
+*Power BI 현황 대시보드. 조치별 대여소 수, 대여소 위치, 자치구별 조치 대상, 대여소 목록.*
 
 ## 5. Flutter 분석 프로그램
 

@@ -10,7 +10,7 @@
 | `data_quality.md` | 2025년 대여 가능 수량 점검 결과. 전체 기록 수, 중복·음수, 빠진 시간, 제외 대여소·기록 수 | `build_metrics.py` |
 | `diagnosis_summary.md` | 기준선, 분류별 대여소 수, 놓친 대여 추정 상위 10곳, 상·하반기 분류 유지 비율 | `build_diagnosis.py` |
 | `method_compare.md` | 규칙 기반 분류와 k-means 군집화의 상·하반기 일치율, 재실행 결과, 군집별 평균 비교 | `compare_methods.py` |
-| `queries.sql` | DuckDB 분석 쿼리 6개. 시간대·대여소·자치구·월별 비율, 500m 안 대체 대여소 비율, 운영 점검 대상 | 원본 파일, 생성 스크립트 없음 |
+| `queries.sql` | DuckDB 분석 쿼리 6개. 시간대·대여소·자치구·월별 비율, 500m 안 대체 대여소 비율, 운영 점검 대상 | 작성 |
 | `query_results.md` | `queries.sql` 쿼리별 결과 표와 소요 시간 | `run_queries.py` |
 | `db_compare.md` | 같은 데이터·같은 단계의 SQLite·DuckDB 적재·집계 시간과 파일 크기 비교, DuckDB 선택 근거 | 측정 기록, 생성 스크립트 없음 |
 

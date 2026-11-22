@@ -142,6 +142,7 @@ class DiagnosisData {
   /// 대여소별 추천 근거: 지표값과 기준 비교
   List<String> reasons(Diagnosis d) {
     String rentCmp() => '하루 평균 대여 ${f1(d.rent)}건: 중앙값 ${f1(rentMedian)}건 ${d.rent >= rentMedian ? '이상' : '미만'}';
+    String closeCmp() => '하루 평균 대여 ${f1(d.rent)}건: 기준 ${f1(minRent)}건 미만';
     String emptyCmp() =>
         '전량 대여 비율 ${n(d.empty)}%: 기준 ${f1(emptyQ3)}% ${(d.empty ?? 0) >= emptyQ3 ? '이상' : '미만'}';
     String bikesCmp() =>
@@ -149,7 +150,7 @@ class DiagnosisData {
     return switch (d.act) {
       Act.expand || Act.more => [rentCmp(), emptyCmp()],
       Act.less => [emptyCmp(), rentCmp(), bikesCmp()],
-      Act.close => d.empty == null ? ['운영 기록 부재: 운영 기간 판별 기준 미충족'] : [rentCmp()],
+      Act.close => d.empty == null ? ['운영 기록 부재: 운영 기간 판별 기준 미충족'] : [closeCmp()],
       Act.keep => [rentCmp(), emptyCmp(), bikesCmp()],
     };
   }

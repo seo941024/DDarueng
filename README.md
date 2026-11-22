@@ -23,9 +23,9 @@
 |---|---|---|---|
 | 언어 | Python 3.10 | DuckDB 1.5·numpy 2.2가 요구하는 최소 버전 | 3.8 이하는 두 라이브러리 미지원 |
 | 집계 DB | DuckDB 1.5 | 열 단위 저장이라 필요한 칼럼만 읽어 집계. 판별 기준을 바꿀 때마다 다시 집계하는 작업에 적합 | SQLite는 행 단위 저장이라 집계 때 모든 칼럼을 읽음. 같은 단계로 비교해 결과값 일치 확인 |
-| 표 처리 | pandas 2.3 | 파일 점검과 내보내기를 표 단위로 처리해 반복 코드 감소 | csv 모듈은 행마다 반복문 작성 |
+| 표 처리 | pandas 2.3 | CP949 CSV·엑셀 읽기와 대여 기록 분할 집계를 표 단위로 처리해 반복 코드 감소 | csv 모듈은 행마다 반복문 작성 |
 | 대시보드 | Power BI Desktop | 항목 선택 시 그래프와 목록이 함께 걸러지는 화면을 코드 없이 구성 | 그래프 코드 작성은 필터 연동을 따로 구현 |
-| 분석 프로그램 | Flutter 3.47 stable | 코드 한 벌로 웹·데스크톱·휴대폰 화면 구성, pubspec 고정으로 같은 환경 재현 | PyQt는 데스크톱 전용, React는 웹 전용 |
+| 분석 프로그램 | Flutter 3.47 stable | 웹 빌드로 설치 없이 브라우저에서 실행, pubspec 고정으로 같은 환경 재현 | PyQt는 데스크톱 전용 |
 
 ---
 
@@ -45,7 +45,7 @@ flowchart LR
 | 단계 | 내용 | 파일 |
 |---|---|---|
 | 수집 | 사이트 파일 목록과 보유 파일 대조, 새 파일만 내려받기 | `scripts/fetch.py` |
-| 점검 | 인코딩·칼럼·중복·누락·이상값 확인 | `scripts/check_files.py`, `analysis/data_quality.md` |
+| 점검 | 원본 인코딩·칼럼 확인, 적재 후 중복·누락·이상값 확인 | `scripts/check_files.py`, `scripts/build_metrics.py` → `analysis/data_quality.md` |
 | 적재 | 대여 가능 수량 적재, 대여 기록을 대여소·시간대별 대여·반납 수로 집계 | `scripts/load.py`, `scripts/load_rentals.py` |
 | 정제·집계 | 운영 판별 기준 적용, 전량 대여 비율 표, 앱용 JSON | `scripts/build_metrics.py` |
 | 진단 | 지표 산출, 기준선 계산, 조치 분류, 상·하반기 검증, 연결 대여소 | `scripts/build_diagnosis.py` |
@@ -114,7 +114,7 @@ flowchart LR
 
 | 항목 | 규칙 기반 | k-means 군집화 |
 |---|---|---|
-| 상·하반기 분류 일치율 | 79.6% | 평균 75.3% |
+| 상·하반기 분류 일치율 (저이용 제외, k-means와 같은 대상) | 79.6% | 평균 75.3% |
 | 같은 데이터 재실행 | 항상 같은 결과 | 초기값에 따라 결과 변동 |
 | 많이 쓰는데 자주 비는 대여소 | 별도 분류로 구분 | 따로 묶이지 않음 |
 | 조치 연결 | 분류 이름이 곧 조치 | 묶음마다 해석 후 조치 지정 |
@@ -236,6 +236,7 @@ python -m venv .venv
 cd app
 flutter pub get
 flutter test
+flutter run -d chrome     # 웹 브라우저에서 실행
 ```
 
 원본 데이터와 DB 파일은 저장소에서 제외, `fetch.py`부터 다시 실행해 생성. 앱용 JSON과 Power BI용 CSV는 포함.
